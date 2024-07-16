@@ -1,0 +1,51 @@
+{
+    "name": "cscan",
+    "displayName": "Cscan",
+    "description": "Real-time code scanning for security issues and code standards using Codestral.",
+    "version": "0.1.3",
+    "publisher": "jkcg-hobby",
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "icon": "images/logo.png",
+    "activationEvents": [
+        "onCommand:cscan.scanCode",
+        "onDidSaveTextDocument",
+        "onDidChangeTextDocument"
+    ],
+    "main": "./out/extension.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jkcg-learning/cscan"
+    },
+    "license": "MIT",
+    "contributes": {
+        "commands": [
+            {
+                "command": "cscan.scanCode",
+                "title": "Scan Code with Cscan"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.10",
+        "@types/vscode": "^1.50.0",
+        "@typescript-eslint/eslint-plugin": "^4.3.0",
+        "@typescript-eslint/parser": "^4.3.0",
+        "eslint": "^7.10.0",
+        "typescript": "^4.0.3",
+        "vscode-test": "^1.4.0"
+    },
+    "dependencies": {
+        "axios": "^0.21.1",
+        "dotenv": "^16.4.5"
+    }
+}
