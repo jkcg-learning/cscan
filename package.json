@@ -1,8 +1,8 @@
 {
     "name": "cscan",
     "displayName": "Cscan",
-    "description": "Real-time code scanning for security issues and code standards using Codestral.",
-    "version": "0.1.5",
+    "description": "Real-time code scanning and chat-based code assistance using Codestral.",
+    "version": "0.1.7",
     "publisher": "jkcg-hobby",
     "engines": {
         "vscode": "^1.50.0"
@@ -19,6 +19,7 @@
         "url": "https://github.com/jkcg-learning/cscan"
     },
     "license": "MIT",
+    "icon": "images/logo.png",
     "contributes": {
         "commands": [
             {
@@ -45,12 +46,17 @@
         "@typescript-eslint/parser": "^4.33.0",
         "eslint": "^7.32.0",
         "typescript": "^4.9.5",
-        "@vscode/test-electron": "^2.4.1"
+        "@vscode/test-electron": "^2.4.1",
+        "@eslint/config-array": "^0.17.0",
+        "@eslint/object-schema": "^2.1.4"
     },
     "dependencies": {
         "@types/node": "^20.14.11",
         "axios": "^1.7.2",
         "dotenv": "^10.0.0",
-        "undici-types": "^6.19.2"
+        "undici-types": "^6.19.2",
+        "lru-cache": "^7.14.2",
+        "rimraf": "^4.0.0",
+        "glob": "^9.3.3"
     }
 }

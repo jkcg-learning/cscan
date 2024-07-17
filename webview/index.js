@@ -6,7 +6,7 @@ const sendButton = document.getElementById('sendButton');
 sendButton.addEventListener('click', () => {
     const message = messageInput.value.trim();
     if (message) {
-        vscode.postMessage({ command: 'scanCode', text: message });
+        vscode.postMessage({ command: 'askQuestion', text: message });
         messageInput.value = '';
     }
 });
@@ -14,9 +14,9 @@ sendButton.addEventListener('click', () => {
 window.addEventListener('message', event => {
     const message = event.data;
     switch (message.command) {
-        case 'scanResult':
+        case 'chatResponse':
             const pre = document.createElement('pre');
-            pre.textContent = JSON.stringify(message.result, null, 2);
+            pre.textContent = message.response;
             messages.appendChild(pre);
             messages.scrollTop = messages.scrollHeight;
             break;
