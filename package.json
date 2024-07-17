@@ -2,16 +2,16 @@
     "name": "cscan",
     "displayName": "Cscan",
     "description": "Real-time code scanning for security issues and code standards using Codestral.",
-    "version": "0.1.3",
+    "version": "0.1.5",
     "publisher": "jkcg-hobby",
     "engines": {
         "vscode": "^1.50.0"
     },
-    "icon": "images/logo.png",
     "activationEvents": [
         "onCommand:cscan.scanCode",
         "onDidSaveTextDocument",
-        "onDidChangeTextDocument"
+        "onDidChangeTextDocument",
+        "onCommand:cscan.startChat"
     ],
     "main": "./out/extension.js",
     "repository": {
@@ -24,6 +24,10 @@
             {
                 "command": "cscan.scanCode",
                 "title": "Scan Code with Cscan"
+            },
+            {
+                "command": "cscan.startChat",
+                "title": "Start Cscan Chat"
             }
         ]
     },
@@ -36,16 +40,17 @@
         "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
-        "@types/node": "^20.14.10",
         "@types/vscode": "^1.50.0",
-        "@typescript-eslint/eslint-plugin": "^4.3.0",
-        "@typescript-eslint/parser": "^4.3.0",
-        "eslint": "^7.10.0",
-        "typescript": "^4.0.3",
-        "vscode-test": "^1.4.0"
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
+        "eslint": "^7.32.0",
+        "typescript": "^4.9.5",
+        "@vscode/test-electron": "^2.4.1"
     },
     "dependencies": {
-        "axios": "^0.21.1",
-        "dotenv": "^16.4.5"
+        "@types/node": "^20.14.11",
+        "axios": "^1.7.2",
+        "dotenv": "^10.0.0",
+        "undici-types": "^6.19.2"
     }
 }
