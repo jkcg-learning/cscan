@@ -2,7 +2,7 @@
     "name": "cscan",
     "displayName": "Cscan",
     "description": "Real-time code scanning and chat-based code assistance using Codestral.",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "publisher": "jkcg-hobby",
     "engines": {
         "vscode": "^1.50.0"

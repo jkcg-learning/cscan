@@ -40,7 +40,7 @@ async function chatWithCodestral(prompt: string, config: Config): Promise<string
     }
 }
 
-function getWebviewContent(extensionUri: vscode.Uri): string {
+function getWebviewContent(extensionUri: vscode.Uri, initialPrompt: string): string {
     const scriptUri = vscode.Uri.joinPath(extensionUri, 'webview', 'index.js');
 
     return `<!DOCTYPE html>
@@ -89,7 +89,42 @@ function getWebviewContent(extensionUri: vscode.Uri): string {
             <textarea id="messageInput" rows="1" placeholder="Type a message..."></textarea>
             <button id="sendButton">Send</button>
         </div>
-        <script src="${scriptUri}"></script>
+        <script>
+            (function() {
+                const vscode = acquireVsCodeApi();
+                const messages = document.getElementById('messages');
+                const messageInput = document.getElementById('messageInput');
+                const sendButton = document.getElementById('sendButton');
+
+                function addMessage(content) {
+                    const pre = document.createElement('pre');
+                    pre.textContent = content;
+                    messages.appendChild(pre);
+                    messages.scrollTop = messages.scrollHeight;
+                }
+
+                sendButton.addEventListener('click', () => {
+                    const message = messageInput.value.trim();
+                    if (message) {
+                        vscode.postMessage({ command: 'askQuestion', text: message });
+                        messageInput.value = '';
+                        addMessage('You: ' + message);
+                    }
+                });
+
+                window.addEventListener('message', event => {
+                    const message = event.data;
+                    switch (message.command) {
+                        case 'chatResponse':
+                            addMessage('Cscan: ' + message.response);
+                            break;
+                    }
+                });
+
+                addMessage('Cscan Chat started. You can ask questions about the code.');
+                ${initialPrompt ? `addMessage('Initial Code Context:\\n${initialPrompt.replace(/\n/g, '\\n')}');` : ''}
+            }());
+        </script>
     </body>
     </html>`;
 }
@@ -99,6 +134,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('cscan.startChat', () => {
+            const editor = vscode.window.activeTextEditor;
+            const initialPrompt = editor ? editor.document.getText() : '';
+
             const panel = vscode.window.createWebviewPanel(
                 'cscanChat',
                 'Cscan Chat',
@@ -108,34 +146,30 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             );
 
-            panel.webview.html = getWebviewContent(context.extensionUri);
+            panel.webview.html = getWebviewContent(context.extensionUri, initialPrompt);
 
             panel.webview.onDidReceiveMessage(async message => {
                 switch (message.command) {
                     case 'askQuestion':
-                        const editor = vscode.window.activeTextEditor;
-                        if (editor) {
-                            const question = message.text;
-                            const code = editor.document.getText();
-                            const prompt = `${code}\n\nQuestion: ${question}`;
-                            try {
-                                const response = await vscode.window.withProgress(
-                                    {
-                                        location: vscode.ProgressLocation.Notification,
-                                        title: "Connecting to Codestral...",
-                                        cancellable: false
-                                    },
-                                    async () => {
-                                        return await chatWithCodestral(prompt, config);
-                                    }
-                                );
-                                panel.webview.postMessage({ command: 'chatResponse', response: response });
-                            } catch (error) {
-                                if (error instanceof Error) {
-                                    vscode.window.showErrorMessage('Error: ' + error.message);
-                                } else {
-                                    vscode.window.showErrorMessage('Error: ' + String(error));
+                        const question = message.text;
+                        const prompt = `${initialPrompt}\n\nQuestion: ${question}`;
+                        try {
+                            const response = await vscode.window.withProgress(
+                                {
+                                    location: vscode.ProgressLocation.Notification,
+                                    title: "Connecting to Codestral...",
+                                    cancellable: false
+                                },
+                                async () => {
+                                    return await chatWithCodestral(prompt, config);
                                 }
+                            );
+                            panel.webview.postMessage({ command: 'chatResponse', response: response });
+                        } catch (error) {
+                            if (error instanceof Error) {
+                                vscode.window.showErrorMessage('Error: ' + error.message);
+                            } else {
+                                vscode.window.showErrorMessage('Error: ' + String(error));
                             }
                         }
                         return;
